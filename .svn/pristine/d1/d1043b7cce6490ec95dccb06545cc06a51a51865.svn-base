@@ -1,0 +1,80 @@
+﻿// CProgressDlg.cpp: 实现文件
+//
+
+#include "stdafx.h"
+#include "Setup.h"
+#include "afxdialogex.h"
+#include "CProgressDlg.h"
+
+// CProgressDlg 对话框
+
+IMPLEMENT_DYNAMIC(CProgressDlg, CDialogEx)
+
+CProgressDlg::CProgressDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_DLG_PROGRESS, pParent)
+{
+}
+
+CProgressDlg::~CProgressDlg()
+{
+	m_animation.UnLoad();
+}
+
+void CProgressDlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_ANIMATION, m_animation);
+}
+
+BEGIN_MESSAGE_MAP(CProgressDlg, CDialogEx)
+	ON_WM_ERASEBKGND()
+	ON_WM_CTLCOLOR()
+END_MESSAGE_MAP()
+
+// CProgressDlg 消息处理程序
+
+BOOL CProgressDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	// TODO:  在此添加额外的初始化
+	if (m_animation.Load(MAKEINTRESOURCE(IDR_GIF1), _T("gif")))
+	{
+		m_animation.Draw();
+	}
+
+	// 在这里设置初始标签文本
+	SetDlgItemText(IDC_PROGRESS_LABEL, _T("正在删除驱动程序，请稍等..."));
+
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 异常: OCX 属性页应返回 FALSE
+}
+
+BOOL CProgressDlg::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	CRect rect;
+	GetClientRect(rect);
+	CBrush brush = RGB(255, 255, 255);
+	pDC->FillRect(rect, &brush);
+
+	return true;
+
+	//return CDialogEx::OnEraseBkgnd(pDC);
+}
+
+HBRUSH CProgressDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+
+	// TODO:  在此更改 DC 的任何特性
+	if (pWnd->GetDlgCtrlID() == IDC_PROGRESS_LABEL)
+	{
+		pDC->SetBkColor(RGB(255, 255, 255)); //设置字体背景为透明
+		// TODO: Return a different brush if the default is not desired
+		return (HBRUSH)::GetStockObject(WhiteColor);     // 设置背景色
+	}
+
+	// TODO:  如果默认的不是所需画笔，则返回另一个画笔
+	return hbr;
+}
